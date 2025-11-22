@@ -6,38 +6,51 @@
 //
 
 import Foundation
+enum APIConfig {
+    static let apiKey = "7dc44631adf5a74a2a9b71d2615d29a5" 
+    static let baseURL = "https://api.themoviedb.org/3"
+    static let imageBaseURL = "https://image.tmdb.org/t/p/w500"
+}
+
+import Foundation
 
 final class APIClient {
+
     static let shared = APIClient()
 
-    private init() {}
+    private let decoder: JSONDecoder = {
+        let d = JSONDecoder()
+        d.keyDecodingStrategy = .convertFromSnakeCase
+        return d
+    }()
+    
+    // MARK: Popular Movies
+    func fetchPopularMovies() async throws -> MovieResponse {
+        let url = URL(string: "\(APIConfig.baseURL)/movie/popular?api_key=\(APIConfig.apiKey)")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try decoder.decode(MovieResponse.self, from: data)
+    }
 
-    private let apiKey = "YOUR_API_KEY"
-    private let baseURL = "https://api.themoviedb.org/3"
+    // MARK: Movie Details
+    func fetchMovieDetail(id: Int) async throws -> MovieDetail {
+        let url = URL(string: "\(APIConfig.baseURL)/movie/\(id)?api_key=\(APIConfig.apiKey)")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try decoder.decode(MovieDetail.self, from: data)
+    }
 
-    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
-        guard var components = URLComponents(string: baseURL + endpoint.path) else { throw NetworkError.badURL }
-        var query = endpoint.queryItems
-        query.append(URLQueryItem(name: "api_key", value: apiKey))
-        components.queryItems = query
+    // MARK: Trailers
+    func fetchMovieVideos(id: Int) async throws -> VideoResponse {
+        let url = URL(string: "\(APIConfig.baseURL)/movie/\(id)/videos?api_key=\(APIConfig.apiKey)")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try decoder.decode(VideoResponse.self, from: data)
+    }
 
-        guard let url = components.url else { throw NetworkError.badURL }
-
-        let (data, response) = try await URLSession.shared.data(from: url)
-
-        guard let http = response as? HTTPURLResponse else { throw NetworkError.badResponse }
-
-        if !(200...299).contains(http.statusCode) {
-            throw NetworkError.serverError(http.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-        do {
-            return try decoder.decode(T.self, from: data)
-        } catch {
-            throw NetworkError.decodingError
-        }
+    // MARK: Search Movies
+    func searchMovies(query: String) async throws -> MovieResponse {
+        let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query
+        let url = URL(string: "\(APIConfig.baseURL)/search/movie?api_key=\(APIConfig.apiKey)&query=\(encoded)")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try decoder.decode(MovieResponse.self, from: data)
     }
 }
+

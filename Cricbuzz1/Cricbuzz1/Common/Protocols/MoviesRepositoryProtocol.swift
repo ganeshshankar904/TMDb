@@ -7,10 +7,9 @@
 
 import Foundation
 
-protocol MoviesRepositoryProtocol {
-    func getPopularMovies() async throws -> MoviesResponse
-    func searchMovies(query: String) async throws -> MoviesResponse
-    func getMovieDetail(id: Int) async throws -> MovieDetail
-    func getVideos(id: Int) async throws -> VideosResponse
-}
-
+//protocol MovieServiceProtocol {
+//    func fetchPopularMovies() async throws -> [Movie]
+//    func searchMovies(query: String) async throws -> [Movie]
+//    func fetchMovieDetail(id: Int) async throws -> MovieDetail
+//    func fetchMovieVideos(id: Int) async throws -> [MovieVideo]
+//}

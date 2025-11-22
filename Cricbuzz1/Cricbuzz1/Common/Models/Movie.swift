@@ -7,36 +7,27 @@
 
 import Foundation
 
-// MARK: - Movie (short)
+
+struct MovieResponse: Codable {
+    let results: [Movie]
+}
+
 struct Movie: Identifiable, Codable {
     let id: Int
     let title: String
     let overview: String?
-    let poster_path: String?
-    let vote_average: Double?
-    let runtime: Int? // may not be present in list endpoint
-    let release_date: String?
+    let posterPath: String?
+    let voteAverage: Double
+    let runtime: Int?
 }
 
-// MARK: - Popular Response
-struct MoviesResponse: Codable {
-    let page: Int
-    let results: [Movie]
-    let total_results: Int
-    let total_pages: Int
-}
-
-// MARK: - MovieDetail
-struct MovieDetail: Codable {
+struct MovieDetail: Codable, Identifiable {
     let id: Int
     let title: String
-    let overview: String?
-    let genres: [Genre]?
+    let overview: String
+    let genres: [Genre]
     let runtime: Int?
-    let vote_average: Double?
-    let poster_path: String?
-    let release_date: String?
-    let credits: CreditsResponse?
+    let voteAverage: Double
 }
 
 struct Genre: Codable {
@@ -63,14 +54,13 @@ struct CrewMember: Codable, Identifiable {
     let job: String?
 }
 
-// MARK: - Videos
-struct VideosResponse: Codable {
-    let id: Int
+
+struct VideoResponse: Codable {
     let results: [Video]
 }
 
 struct Video: Codable, Identifiable {
-    let id: String
+    var id: String { key }
     let key: String
     let name: String
     let site: String
