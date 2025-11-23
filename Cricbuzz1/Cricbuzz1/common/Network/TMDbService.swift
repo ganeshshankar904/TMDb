@@ -55,7 +55,6 @@ final class TMDbService: MovieServiceProtocol {
     }
 
     func fetchMovieVideos(id: Int) async throws -> [Video] {
-        // separate endpoint if needed
         guard var comp = URLComponents(string: APIConfig.baseURL + "/movie/\(id)/videos") else { throw URLError(.badURL) }
         comp.queryItems = [URLQueryItem(name: "api_key", value: APIConfig.apiKey)]
         let url = comp.url!

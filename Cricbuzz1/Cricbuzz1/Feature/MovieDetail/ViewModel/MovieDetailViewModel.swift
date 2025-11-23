@@ -17,7 +17,7 @@ class MovieDetailViewModel: ObservableObject {
     let movieId: Int
     let service: MovieServiceProtocol
 
-    /// Returns the first YouTube trailer key
+    // Returns the first YouTube trailer key
     var trailerKey: String? {
         videos.first(where: { ($0.type ?? "").lowercased() == "trailer" })?.key
     }
@@ -27,7 +27,7 @@ class MovieDetailViewModel: ObservableObject {
         self.service = service
     }
 
-    /// Loads movie detail + videos together
+    // Loads movie detail + videos together
     func load() async {
         isLoading = true
 
@@ -38,7 +38,7 @@ class MovieDetailViewModel: ObservableObject {
             self.detail = try await detailCall
             self.videos = try await videoCall
         } catch {
-            print("❌ Error loading movie detail:", error)
+            print(" Error loading movie detail:", error)
         }
 
         isLoading = false
