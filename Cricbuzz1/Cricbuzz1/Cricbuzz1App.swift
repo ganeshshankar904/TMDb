@@ -8,10 +8,29 @@
 import SwiftUI
 
 @main
-struct Cricbuzz1App: App {
+struct MovieAppMain: App {
+    @StateObject private var router = Router()
+    @StateObject private var favorites = FavoritesStore()
+
     var body: some Scene {
         WindowGroup {
-            MovieListView()
+            NavigationStack(path: $router.path) {
+                LoginView()
+                    .environmentObject(router)
+                    .environmentObject(favorites)
+                    .navigationDestination(for: AppRoute.self) { route in
+                        switch route {
+                        case .movieList:
+                            MovieListView()
+                                .environmentObject(router)
+                                .environmentObject(favorites)
+                        case .movieDetail(let id):
+                            MovieDetailView(movieId: id)
+                                .environmentObject(router)
+                                .environmentObject(favorites)
+                        }
+                    }
+            }
         }
     }
 }
